@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Login Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">QR Login</h1>
+    <p></p><p></p>
+    <div id="qrcode" style="width:300px;height:300px;margin:auto"></div>
+    <h6 id="code"></h6>
+</div>
+<script src="~/js/signalr/dist/browser/signalr.min.js" asp-append-version="true"></script>
+<script src="~/js/qrcode.min.js" asp-append-version="true"></script>
+<script type="text/javascript">
+
+    "use strict";
+
+    var qrcode = new QRCode("qrcode", {
+        text: "",
+        width: 300,
+        height: 300,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    var connection = new signalR.HubConnectionBuilder().withUrl("/qRLogin").build();
+
+    connection.on("SendCode", function (code) {
+        qrcode.makeCode(code); 
+        $("#code").text(code);
+    });
+
+    connection.on("Authenticated", function () {
+        alert("Authenticated");
+    });
+
+    connection.start().then(function () {
+        qrcode.clear();
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+   
+</script>

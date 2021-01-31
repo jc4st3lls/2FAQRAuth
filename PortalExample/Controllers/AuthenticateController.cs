@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
@@ -18,18 +21,14 @@ namespace PortalExample.Controllers
     [Route("api/[controller]")]
     public class AuthenticateController : Controller
     {
-        private static readonly SecurityKey SigningKey = new SymmetricSecurityKey(Guid.NewGuid().ToByteArray());
-        private static readonly JwtSecurityTokenHandler JwtTokenHandler = new JwtSecurityTokenHandler();
-        public static readonly SigningCredentials SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha256);
-        public const string Issuer = "PortalExampleJwt";
-        public const string Audience = "PortalExampleJwt";
-
+        
         IHubContext<QRLogin> _hub;
+        IUserService _userService;
 
-
-        public AuthenticateController(IHubContext<QRLogin> hub)
+        public AuthenticateController(IUserService userService,IHubContext<QRLogin> hub)
         {
             _hub = hub;
+            _userService = userService;
         }
 
         
@@ -39,30 +38,13 @@ namespace PortalExample.Controllers
         public async Task<IActionResult> Post([FromBody] QRAuthToken value)
         {
             await Task.CompletedTask;
+
+
             if (value != null)
             {
                 if (!string.IsNullOrEmpty(value.Code) && !string.IsNullOrEmpty(value.Uid))
                 {
-                    //var user = userService.GetUserBy(name);
-
-                    //if (user == null)
-                    //{
-                    //    return Unauthorized();
-                    //}
-
-                    var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, value.Uid),
-                        new Claim(ClaimTypes.NameIdentifier, value.Uid)
-                    };
-
-                    var claimsIdentity = new ClaimsIdentity(claims);
-
-                    var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-                    await HttpContext.SignInAsync(claimsPrincipal);
-
-
+                    await _hub.Clients.All.SendAsync("AuthenticateCode",value.Uid);
 
 
                 }
@@ -72,7 +54,57 @@ namespace PortalExample.Controllers
             return NotFound();
 
         }
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] string uid)
+        {
+            var user = await _userService.GetUserBy(uid);
 
-        
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Name),
+                        new Claim(ClaimTypes.NameIdentifier, user.Uid)
+                    };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+
+            var authProperties = new AuthenticationProperties
+            {
+                AllowRefresh = true,
+                // Refreshing the authentication session should be allowed.
+
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                // The time at which the authentication ticket expires. A 
+                // value set here overrides the ExpireTimeSpan option of 
+                // CookieAuthenticationOptions set with AddCookie.
+
+                IsPersistent = true,
+                // Whether the authentication session is persisted across 
+                // multiple requests. When used with cookies, controls
+                // whether the cookie's lifetime is absolute (matching the
+                // lifetime of the authentication ticket) or session-based.
+
+                //IssuedUtc = <DateTimeOffset>,
+                // The time at which the authentication ticket was issued.
+
+                //RedirectUri = ""
+                // The full path or absolute URI to be used as an http 
+                // redirect response value.
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                claimsPrincipal,
+                authProperties);
+            return Ok();
+
+        }
     }
 }

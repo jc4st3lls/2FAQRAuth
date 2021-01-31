@@ -30,8 +30,28 @@
         $("#code").text(code);
     });
 
-    connection.on("Authenticated", function () {
-        alert("Authenticated");
+    connection.on("AuthenticateCode", function (uid) {
+
+        fetch("api/Authenticate", {
+            method: 'PUT', 
+            mode: 'cors',
+            cache: 'no-cache', 
+            credentials: 'same-origin', 
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            redirect: 'follow', 
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify(uid)
+        }).then(function (response) {
+
+            var a = response.json();
+            window.location.href = "/";
+
+
+        });
+       
+
     });
 
     connection.start().then(function () {

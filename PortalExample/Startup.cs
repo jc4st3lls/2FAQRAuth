@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PortalExample.Controllers;
 using PortalExample.Services;
 
 namespace PortalExample
@@ -26,36 +25,18 @@ namespace PortalExample
             services.AddControllers();
             services.AddControllersWithViews();
 
+
+
             services.AddAuthorization()
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                        {
-                            ValidIssuer = AuthenticateController.Issuer,
-                            ValidAudience = AuthenticateController.Audience,
-                            IssuerSigningKey = AuthenticateController.SigningCredentials.Key
-                        };
-
-                        //options.Events = new JwtBearerEvents
-                        //{
-                        //    OnMessageReceived = context =>
-                        //    {
-                        //        var accessToken = context.Request.Query["access_token"];
-
-                        //        if (!string.IsNullOrEmpty(accessToken) &&
-                        //            (context.HttpContext.WebSockets.IsWebSocketRequest || context.Request.Headers["Accept"] == "text/event-stream"))
-                        //        {
-                        //            context.Token = context.Request.Query["access_token"];
-                        //        }
-                        //        return Task.CompletedTask;
-                        //    }
-                        //};
-                    });
+                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
 
 
             services.AddSignalR();
+
+
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,7 +56,7 @@ namespace PortalExample
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

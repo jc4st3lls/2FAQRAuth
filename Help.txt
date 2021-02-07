@@ -1,3 +1,5 @@
 ﻿https://anexsoft.com/tutorial-sobre-asp-net-identity
 
 https://docs.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-3.1
+
+https://www.youtube.com/watch?v=y7rZbwOqrUk

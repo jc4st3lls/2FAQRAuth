@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PortalExample.Models;
 
 namespace PortalExample.Services
 {
@@ -9,11 +10,5 @@ namespace PortalExample.Services
         public Task<Profile> GetUserBy(string uid);
     }
 
-    public class Profile
-    {
-        public string Uid { get; set; }
-        public string Name { get; set; }
-
-
-    }
+    
 }

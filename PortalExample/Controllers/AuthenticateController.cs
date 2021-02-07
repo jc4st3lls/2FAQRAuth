@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.IdentityModel.Tokens;
 using PortalExample.Models;
 using PortalExample.Services;
 
@@ -31,22 +26,32 @@ namespace PortalExample.Controllers
             _userService = userService;
         }
 
-        
+        [HttpGet]
+        public string[] Get()
+        {
+            return new[] { "Runs!!" }; // Per test
+        }
 
         // POST api/values
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] QRAuthToken value)
         {
-            await Task.CompletedTask;
+            //Aqui es podria posar un identificador de dispositiu amb la App instal.lada.
 
 
             if (value != null)
             {
                 if (!string.IsNullOrEmpty(value.Code) && !string.IsNullOrEmpty(value.Uid))
                 {
-                    await _hub.Clients.All.SendAsync("AuthenticateCode",value.Uid);
 
+                    var client = _hub.Clients.Client(value.Code.Trim());
 
+                    if (client != null)
+                    {
+                        await client.SendAsync("AuthenticateCode", value.Uid);
+                        return Ok();
+                    }
+                    
                 }
             }
 

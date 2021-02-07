@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PortalExample.Models;
 
 namespace PortalExample.Services
 {
     public class UserService:IUserService
     {
-        public UserService()
-        {
-        }
+     
 
         public async Task<Profile> GetUserBy(string uid)
         {
             // TO-DO
             await Task.CompletedTask;
-            if (uid.Equals("jc4st3lls"))
+
+            if (AppSet.DbUsers.TryGetValue(uid, out var profile))
             {
-                return new Profile()
-                {
-                    Uid = uid,
-                    Name = "Jordi"
-                };
+                return profile;
             }
 
             return null;

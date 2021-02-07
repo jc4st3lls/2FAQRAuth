@@ -6,7 +6,6 @@
     <h1 class="display-4">QR Login</h1>
     <p></p><p></p>
     <div id="qrcode" style="width:300px;height:300px;margin:auto"></div>
-    <h6 id="code"></h6>
 </div>
 <script src="~/js/signalr/dist/browser/signalr.min.js" asp-append-version="true"></script>
 <script src="~/js/qrcode.min.js" asp-append-version="true"></script>
@@ -26,8 +25,7 @@
     var connection = new signalR.HubConnectionBuilder().withUrl("/qRLogin").build();
 
     connection.on("SendCode", function (code) {
-        qrcode.makeCode(code); 
-        $("#code").text(code);
+        qrcode.makeCode(code);        
     });
 
     connection.on("AuthenticateCode", function (uid) {
@@ -48,9 +46,7 @@
             var a = response.json();
             window.location.href = "/";
 
-
-        });
-       
+        });      
 
     });
 
@@ -59,6 +55,5 @@
     }).catch(function (err) {
         return console.error(err.toString());
     });
-
    
 </script>

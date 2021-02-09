@@ -16,12 +16,12 @@ namespace _2FAQRAuthApp
 
         public App()
         {
-            InitializeComponent();          
-           
+            InitializeComponent();
+
             PORTAL_SCHEMA = "http";
             PORTAL_HOST = "192.168.1.46";
             PORTAL_PORT = "5000";
-                       
+
             //PORTAL_SCHEMA = "https";
             //PORTAL_HOST = "192.168.1.46";
             //PORTAL_PORT = "5001";

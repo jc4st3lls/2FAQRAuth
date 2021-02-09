@@ -35,7 +35,7 @@ namespace PortalExample
 
             services.AddSignalR();
 
-
+            services.AddScoped<ISimpleCypher, CustomCypher>();
             services.AddScoped<IUserService, UserService>();
         }
 

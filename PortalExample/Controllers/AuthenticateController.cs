@@ -16,14 +16,15 @@ namespace PortalExample.Controllers
     [Route("api/[controller]")]
     public class AuthenticateController : Controller
     {
-        
+        ISimpleCypher _cypher;
         IHubContext<QRLogin> _hub;
         IUserService _userService;
 
-        public AuthenticateController(IUserService userService,IHubContext<QRLogin> hub)
+        public AuthenticateController(IUserService userService,ISimpleCypher cypher,IHubContext<QRLogin> hub)
         {
             _hub = hub;
             _userService = userService;
+            _cypher = cypher;
         }
 
         [HttpGet]
@@ -48,7 +49,8 @@ namespace PortalExample.Controllers
 
                     if (client != null)
                     {
-                        await client.SendAsync("AuthenticateCode", value.Uid);
+                        var _uid = _cypher.RandomEncrypt(value.Uid);
+                        await client.SendAsync("AuthenticateCode", _uid);
                         return Ok();
                     }
                     
@@ -62,7 +64,9 @@ namespace PortalExample.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] string uid)
         {
-            var user = await _userService.GetUserBy(uid);
+            var _uid = _cypher.RandomDecrypt(uid);
+
+            var user = await _userService.GetUserBy(_uid);
 
             if (user == null)
             {

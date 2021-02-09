@@ -8,9 +8,23 @@
             <Label Text="QR Auth App" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
         </Frame>
       
-			<Label Text="Username" />
+			<Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Username:" FontAttributes="Bold" TextColor="Red"/>
+                   </FormattedString>
+                </Label.FormattedText>
+            </Label>
 			<Entry x:Name="UsernameEntry" Placeholder="username" Text="jc4st3lls" />
-			<Label Text="Password" />
+			
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Password:" FontAttributes="Bold" TextColor="Red"/>
+                   </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
 			<Entry x:Name="PasswordEntry" IsPassword="true" />
 			<Button Text="Login" Clicked="LoginButton_Clicked" />
 			<Label x:Name="messageLabel" />

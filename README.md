@@ -35,13 +35,7 @@ En la App, cal configurar bé on es troba el portal. Això ho trobem en el const
         }
 ```
 
-# Donacions
-
-BTC = bc1q33wmuc0lcwh4krchfmxrt4jak3v628z658f85j
-
-TRX = TRdxjgLv4nr8GYwsdXkUv4ZwCCTvfMqgnS
-
-ETH = 0x3582cf65c158b23bbbaee3e3a3158ce4b5d99978
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/jcastellsgH)
 
 :_)
 
